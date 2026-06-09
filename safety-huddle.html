@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Huddle — UPA 24h Rocinha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --navy:    #1e3a8a;
+            --blue:    #2563eb;
+            --accent:  #3b82f6;
+            --light:   #eff6ff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger:  #ef4444;
+            --text:    #1e293b;
+            --muted:   #64748b;
+            --border:  #e2e8f0;
+            --white:   #ffffff;
+            --bg:      #f0f4f8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: var(--navy);
+            color: white;
+            padding: 0 20px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 4px solid var(--accent);
+            box-shadow: 0 4px 20px rgba(0,0,0,.3);
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-logo img {
+            height: 48px;
+            object-fit: contain;
+        }
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+        .header-title span:first-child {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+        .header-title span:last-child {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            opacity: .75;
+            text-transform: uppercase;
+        }
+        .header-clock {
+            text-align: right;
+        }
+        #hud-clock {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        #hud-date {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: .8;
+            margin-top: 2px;
+        }
+
+        /* ── HERO BANNER ── */
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, #1d4ed8 100%);
+            color: white;
+            padding: 28px 20px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '🛡️';
+            position: absolute;
+            font-size: 8rem;
+            opacity: .06;
+            top: -10px;
+            right: -10px;
+        }
+        .hero h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .hero p {
+            font-size: 0.82rem;
+            opacity: .8;
+            margin-top: 6px;
+            letter-spacing: .5px;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,.15);
+            border: 1px solid rgba(255,255,255,.3);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        /* ── PROGRESS BAR ── */
+        .progress-wrap {
+            background: white;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 80px;
+            z-index: 90;
+            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .progress-bar-bg {
+            background: var(--border);
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 8px;
+            border-radius: 20px;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            width: 0%;
+            transition: width .4s ease;
+        }
+
+        /* ── FORM ── */
+        .form-wrap {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 20px 16px 40px;
+        }
+
+        /* ── SECTION CARD ── */
+        .section-card {
+            background: white;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,.04);
+            transition: box-shadow .2s;
+        }
+        .section-card:focus-within {
+            box-shadow: 0 4px 20px rgba(37,99,235,.12);
+            border-color: #93c5fd;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1d4ed8 100%);
+            color: white;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-header .sec-icon { font-size: 1.4rem; }
+        .section-header .sec-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            flex: 1;
+        }
+        .section-header .sec-chevron {
+            font-size: 0.9rem;
+            opacity: .7;
+            transition: transform .25s;
+        }
+        .section-header.collapsed .sec-chevron { transform: rotate(-90deg); }
+
+        .section-body {
+            padding: 16px 18px;
+        }
+        .section-body.hidden { display: none; }
+
+        /* ── FIELDS ── */
+        .field { margin-bottom: 14px; }
+        .field:last-child { margin-bottom: 0; }
+
+        label.field-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .required-star { color: var(--danger); margin-left: 2px; }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.88rem;
+            color: var(--text);
+            background: #f8fafc;
+            outline: none;
+            transition: border-color .2s, background .2s;
+            appearance: none;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+            background: white;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 72px;
+            line-height: 1.5;
+        }
+
+        .field-row {
+            display: flex;
+            gap: 10px;
+        }
+        .field-row .field { flex: 1; }
+
+        /* ── YES/NO GRID ── */
+        .yn-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .yn-table thead tr {
+            background: var(--light);
+        }
+        .yn-table thead th {
+            padding: 8px 10px;
+            font-weight: 800;
+            font-size: 0.72rem;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            color: var(--navy);
+        }
+        .yn-table thead th:first-child { text-align: left; }
+        .yn-table thead th:not(:first-child) { text-align: center; width: 60px; }
+
+        .yn-table tbody tr:nth-child(even) { background: #f8fafc; }
+        .yn-table tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+        .yn-table tbody tr:hover { background: #eff6ff; }
+        .yn-table tbody tr:last-child { border-bottom: none; }
+
+        .yn-table td {
+            padding: 10px 10px;
+            vertical-align: middle;
+        }
+        .yn-table td:first-child {
+            color: var(--text);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        .yn-table td:not(:first-child) { text-align: center; }
+
+        /* Custom radio / checkbox */
+        .yn-radio {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            transition: border-color .15s, background .15s;
+            vertical-align: middle;
+        }
+        .yn-radio:checked {
+            border-color: var(--accent);
+            background: var(--accent);
+        }
+        .yn-radio:checked::after {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        /* ── QUANTITY SELECTOR ── */
+        .qty-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            gap: 10px;
+        }
+        .qty-row:last-child { border-bottom: none; }
+        .qty-label { font-size: 0.82rem; font-weight: 600; flex: 1; line-height: 1.4; }
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .qty-btn {
+            background: var(--light);
+            border: none;
+            width: 32px;
+            height: 32px;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            color: var(--navy);
+            transition: background .15s;
+        }
+        .qty-btn:hover { background: #bfdbfe; }
+        .qty-val {
+            min-width: 36px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--navy);
+            padding: 0 6px;
+        }
+
+        /* ── CARGO CHIPS ── */
+        .cargo-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .cargo-chip {
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 2px solid var(--border);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .15s;
+            background: white;
+            color: var(--text);
+            user-select: none;
+        }
+        .cargo-chip.selected {
+            background: var(--navy);
+            border-color: var(--navy);
+            color: white;
+        }
+
+        /* ── SUBMIT ── */
+        .submit-wrap {
+            text-align: center;
+            padding: 10px 0 0;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, var(--navy), var(--blue));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 40px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            transition: transform .15s, box-shadow .15s;
+            box-shadow: 0 6px 20px rgba(37,99,235,.4);
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(37,99,235,.5);
+        }
+        .btn-submit:active { transform: translateY(0); }
+
+        /* ── SUCCESS OVERLAY ── */
+        .success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .success-overlay.show { display: flex; }
+        .success-box {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
+        }
+        @keyframes popIn {
+            from { transform: scale(.8); opacity: 0; }
+            to   { transform: scale(1);  opacity: 1; }
+        }
+        .success-icon { font-size: 4rem; display: block; margin-bottom: 12px; }
+        .success-box h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+        .success-box p { font-size: 0.88rem; color: var(--muted); margin-bottom: 24px; }
+        .btn-close-success {
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        /* ── SECTION TITLE COLORS (accent strip) ── */
+        .sec-patients  .section-header { background: linear-gradient(135deg,#0f172a,#1e3a8a); }
+        .sec-entrada   .section-header { background: linear-gradient(135deg,#1e3a8a,#0369a1); }
+        .sec-nir       .section-header { background: linear-gradient(135deg,#064e3b,#047857); }
+        .sec-social    .section-header { background: linear-gradient(135deg,#4c1d95,#6d28d9); }
+        .sec-nutri     .section-header { background: linear-gradient(135deg,#7c2d12,#c2410c); }
+        .sec-farma     .section-header { background: linear-gradient(135deg,#831843,#be185d); }
+        .sec-lab       .section-header { background: linear-gradient(135deg,#134e4a,#0f766e); }
+        .sec-rx        .section-header { background: linear-gradient(135deg,#0c4a6e,#0369a1); }
+        .sec-tomo      .section-header { background: linear-gradient(135deg,#1e3a8a,#3730a3); }
+        .sec-cme       .section-header { background: linear-gradient(135deg,#374151,#1f2937); }
+        .sec-ccih      .section-header { background: linear-gradient(135deg,#7f1d1d,#b91c1c); }
+        .sec-vigil     .section-header { background: linear-gradient(135deg,#164e63,#0e7490); }
+        .sec-nsp       .section-header { background: linear-gradient(135deg,#713f12,#a16207); }
+        .sec-edu       .section-header { background: linear-gradient(135deg,#1e3a8a,#2563eb); }
+        .sec-higie     .section-header { background: linear-gradient(135deg,#065f46,#059669); }
+        .sec-maqueiro  .section-header { background: linear-gradient(135deg,#374151,#4b5563); }
+        .sec-vigilante .section-header { background: linear-gradient(135deg,#1f2937,#374151); }
+        .sec-ti        .section-header { background: linear-gradient(135deg,#1e3a8a,#1d4ed8); }
+        .sec-almo      .section-header { background: linear-gradient(135deg,#78350f,#b45309); }
+        .sec-engclin   .section-header { background: linear-gradient(135deg,#1e3a8a,#0369a1); }
+        .sec-rouparia  .section-header { background: linear-gradient(135deg,#6b21a8,#7c3aed); }
+        .sec-manut     .section-header { background: linear-gradient(135deg,#374151,#1e3a8a); }
+        .sec-conting   .section-header { background: linear-gradient(135deg,#7f1d1d,#991b1b); }
+
+        /* ── TEXTAREA NOTE ── */
+        .field-note {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* ── ASSINATURA ── */
+        .sig-wrap {
+            position: relative;
+            background: white;
+            border: 2px dashed var(--accent);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        .sig-wrap canvas {
+            display: block;
+            width: 100%;
+            height: 160px;
+        }
+        .sig-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            color: #cbd5e1;
+            gap: 6px;
+            transition: opacity .3s;
+        }
+        .sig-placeholder.hidden { opacity: 0; }
+        .sig-placeholder .sig-icon { font-size: 2rem; }
+        .sig-placeholder span { font-size: 0.78rem; font-weight: 600; letter-spacing: .5px; }
+        .sig-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn-sig-clear {
+            flex: 1;
+            padding: 9px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--muted);
+            transition: all .15s;
+        }
+        .btn-sig-clear:hover { background: #fef2f2; border-color: var(--danger); color: var(--danger); }
+
+        /* ── SENDING OVERLAY ── */
+        .sending-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(30,58,138,.85);
+            z-index: 9998;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+            color: white;
+        }
+        .sending-overlay.show { display: flex; }
+        .send-spinner {
+            width: 52px; height: 52px;
+            border: 5px solid rgba(255,255,255,.25);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .send-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.6rem; }
+            .header-title span:first-child { font-size: 1rem; }
+            #hud-clock { font-size: 1.5rem; }
+            .yn-table td { padding: 8px 6px; }
+            .yn-table thead th { padding: 8px 6px; }
+        }
+
+        /* ── IMPRESSÃO / PDF ── */
+        @media print {
+            body > *:not(#pdfArea) { display: none !important; }
+            #pdfArea { display: block !important; }
+            @page { margin: 15mm 12mm; size: A4; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-logo">
+        <img src="https://uparocinha.github.io/NOTIFICAEVENTO/logo.png" alt="UPA Rocinha" onerror="this.style.display='none'">
+        <div class="header-title">
+            <span>GESTÃO INTELIGENTE</span>
+            <span>de colaboradores</span>
+        </div>
+    </div>
+    <div class="header-clock">
+        <div id="hud-clock">☀️ 00:00</div>
+        <div id="hud-date">---</div>
+    </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>🛡️ Safety Huddle</h1>
+    <p>UPA 24h Rocinha — Parada Estratégica</p>
+    <div class="hero-badge">Preencha ao início de cada plantão</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+    <div class="progress-label">
+        <span>Progresso do Huddle</span>
+        <span id="prog-text">0 / 0 seções</span>
+    </div>
+    <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="prog-bar"></div>
+    </div>
+</div>
+
+<!-- FORM -->
+<div class="form-wrap">
+<form id="huddleForm" onsubmit="submitHuddle(event)">
+
+    <!-- ── 1. IDENTIFICAÇÃO ── -->
+    <div class="section-card" id="sec-ident">
+        <div class="section-header" onclick="toggleSection('sec-ident')">
+            <span class="sec-icon">📋</span>
+            <span class="sec-title">Identificação do Plantão</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label">Data<span class="required-star">*</span></label>
+                    <input type="date" id="f_data" required>
+                </div>
+                <div class="field">
+                    <label class="field-label">Horário</label>
+                    <input type="time" id="f_hora">
+                </div>
+            </div>
+            <div class="field">
+                <label class="field-label">Nome do Profissional<span class="required-star">*</span></label>
+                <input type="text" id="f_nome" placeholder="Nome completo" required>
+            </div>
+            <div class="field">
+                <label class="field-label">Cargo ou Função<span class="required-star">*</span></label>
+                <div class="cargo-grid" id="cargo-grid">
+                    <div class="cargo-chip" onclick="selectCargo(this,'Coordenação')">Coordenação</div>
+                    <div class="cargo-chip" onclick="selectCargo(this,'Rotina')">Rotina</div>
+                    <div class="cargo-chip" onclick="selectCargo(this,'Liderança Médica')">Liderança Médica</div>
+                    <div class="cargo-chip" onclick="selectCargo(this,'Liderança de Enfermagem')">Liderança de Enfermagem</div>
+                    <div class="cargo-chip" onclick="selectCargo(this,'Liderança Administrativa')">Liderança Administrativa</div>
+                </div>
+                <input type="hidden" id="f_cargo">
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 2. EQUIPES DE PLANTÃO ── -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">👥</span>
+            <span class="sec-title">Equipes de Plantão</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Todas as especialidades estão presentes no Huddle?</td><td><input type="radio" name="eq1" value="Sim" class="yn-radio"></td><td><input type="radio" name="eq1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Escala de funcionários, deste plantão, está completa?</td><td><input type="radio" name="eq2" value="Sim" class="yn-radio"></td><td><input type="radio" name="eq2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Escala de funcionários está acessível aos pacientes?</td><td><input type="radio" name="eq3" value="Sim" class="yn-radio"></td><td><input type="radio" name="eq3" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 3. PACIENTES ── -->
+    <div class="section-card sec-patients">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🏥</span>
+            <span class="sec-title">Pacientes</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Paciente(s) com previsão de alta?</td><td><input type="radio" name="pac1" value="Sim" class="yn-radio"></td><td><input type="radio" name="pac1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Ocupação dos leitos total?</td><td><input type="radio" name="pac2" value="Sim" class="yn-radio"></td><td><input type="radio" name="pac2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Paciente(s) aguardando avaliação?</td><td><input type="radio" name="pac3" value="Sim" class="yn-radio"></td><td><input type="radio" name="pac3" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Paciente(s) aguardando exame?</td><td><input type="radio" name="pac4" value="Sim" class="yn-radio"></td><td><input type="radio" name="pac4" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum protocolo (Sepse, IAM ou AVC) foi aberto nas últimas 24h?</td><td><input type="radio" name="pac5" value="Sim" class="yn-radio"></td><td><input type="radio" name="pac5" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Paciente(s) com suspeita de Sepse, IAM ou AVC?</td><td><input type="radio" name="pac6" value="Sim" class="yn-radio"></td><td><input type="radio" name="pac6" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum paciente aguardando retorno &gt; 2h?</td><td><input type="radio" name="pac7" value="Sim" class="yn-radio"></td><td><input type="radio" name="pac7" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 4. PORTA DE ENTRADA ── -->
+    <div class="section-card sec-entrada">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🚪</span>
+            <span class="sec-title">Porta de Entrada × CR × Atendimento</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="field">
+                <label class="field-label">A demanda de porta de entrada está alta?</label>
+                <div style="display:flex;gap:16px;margin-top:4px;">
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;font-weight:600;cursor:pointer;">
+                        <input type="radio" name="porta1" value="Sim" class="yn-radio"> Sim
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;font-weight:600;cursor:pointer;">
+                        <input type="radio" name="porta1" value="Não" class="yn-radio"> Não
+                    </label>
+                </div>
+            </div>
+            <div class="field" style="margin-top:14px;">
+                <label class="field-label">Tempo médio entre a CR e o Atendimento</label>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:600;cursor:pointer;padding:8px 14px;border-radius:20px;border:2px solid var(--border);background:white;" id="cr-chip1">
+                        <input type="radio" name="cr_tempo" value="< 30min" style="display:none;" onchange="updateCRChip()"> &lt; 30min
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:600;cursor:pointer;padding:8px 14px;border-radius:20px;border:2px solid var(--border);background:white;" id="cr-chip2">
+                        <input type="radio" name="cr_tempo" value="30 a 60min" style="display:none;" onchange="updateCRChip()"> 30 a 60min
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:600;cursor:pointer;padding:8px 14px;border-radius:20px;border:2px solid var(--border);background:white;" id="cr-chip3">
+                        <input type="radio" name="cr_tempo" value="> 60min" style="display:none;" onchange="updateCRChip()"> &gt; 60min
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 5. NIR ── -->
+    <div class="section-card sec-nir">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🛏️</span>
+            <span class="sec-title">NIR — Núcleo Interno de Regulação</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <!-- Quantidades -->
+            <div style="margin-bottom:14px;">
+                <div style="font-size:0.72rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Quantidade de Pacientes</div>
+                <div class="qty-row">
+                    <span class="qty-label">Sala Amarela</span>
+                    <div class="qty-controls">
+                        <button type="button" class="qty-btn" onclick="changeQty('qty-sa',-1)">−</button>
+                        <span class="qty-val" id="qty-sa">0</span>
+                        <button type="button" class="qty-btn" onclick="changeQty('qty-sa',1)">+</button>
+                    </div>
+                </div>
+                <div class="qty-row">
+                    <span class="qty-label">Sala Amarela Pediátrica</span>
+                    <div class="qty-controls">
+                        <button type="button" class="qty-btn" onclick="changeQty('qty-sap',-1)">−</button>
+                        <span class="qty-val" id="qty-sap">0</span>
+                        <button type="button" class="qty-btn" onclick="changeQty('qty-sap',1)">+</button>
+                    </div>
+                </div>
+                <div class="qty-row">
+                    <span class="qty-label">Isolamento</span>
+                    <div class="qty-controls">
+                        <button type="button" class="qty-btn" onclick="changeQty('qty-iso',-1)">−</button>
+                        <span class="qty-val" id="qty-iso">0</span>
+                        <button type="button" class="qty-btn" onclick="changeQty('qty-iso',1)">+</button>
+                    </div>
+                </div>
+                <div class="qty-row">
+                    <span class="qty-label">Sala Vermelha</span>
+                    <div class="qty-controls">
+                        <button type="button" class="qty-btn" onclick="changeQty('qty-sv',-1)">−</button>
+                        <span class="qty-val" id="qty-sv">0</span>
+                        <button type="button" class="qty-btn" onclick="changeQty('qty-sv',1)">+</button>
+                    </div>
+                </div>
+            </div>
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Todos os pacientes internados com AIH?</td><td><input type="radio" name="nir1" value="Sim" class="yn-radio"></td><td><input type="radio" name="nir1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum paciente para VAGA ZERO com pedido de procedimento ou avaliação?</td><td><input type="radio" name="nir2" value="Sim" class="yn-radio"></td><td><input type="radio" name="nir2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Todos os pacientes foram inseridos no SER com menos de 24h?</td><td><input type="radio" name="nir3" value="Sim" class="yn-radio"></td><td><input type="radio" name="nir3" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 6. SERVIÇO SOCIAL ── -->
+    <div class="section-card sec-social">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🤝</span>
+            <span class="sec-title">Serviço Social</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Temos pacientes com acompanhamento do serviço social?</td><td><input type="radio" name="ss1" value="Sim" class="yn-radio"></td><td><input type="radio" name="ss1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum paciente aguardando abrigo, cuidados prolongados, alta social ou Ministério Público?</td><td><input type="radio" name="ss2" value="Sim" class="yn-radio"></td><td><input type="radio" name="ss2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Temos familiar de paciente com acompanhamento do SESO?</td><td><input type="radio" name="ss3" value="Sim" class="yn-radio"></td><td><input type="radio" name="ss3" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 7. NUTRIÇÃO ── -->
+    <div class="section-card sec-nutri">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🍽️</span>
+            <span class="sec-title">Nutrição</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Problemas com a oferta/distribuição de refeições aos pacientes?</td><td><input type="radio" name="nut1" value="Sim" class="yn-radio"></td><td><input type="radio" name="nut1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum paciente em dieta zero?</td><td><input type="radio" name="nut2" value="Sim" class="yn-radio"></td><td><input type="radio" name="nut2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum paciente com restrição alimentar?</td><td><input type="radio" name="nut3" value="Sim" class="yn-radio"></td><td><input type="radio" name="nut3" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+            <div class="field" style="margin-top:12px;">
+                <label class="field-label">Relate problema (se houver)</label>
+                <textarea id="f_nut_obs" placeholder="Descreva..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 8. FARMÁCIA ── -->
+    <div class="section-card sec-farma">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">💊</span>
+            <span class="sec-title">Farmácia</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Medicações em falta?</td><td><input type="radio" name="far1" value="Sim" class="yn-radio"></td><td><input type="radio" name="far1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Plano de ação em execução?</td><td><input type="radio" name="far2" value="Sim" class="yn-radio"></td><td><input type="radio" name="far2" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+            <div class="field" style="margin-top:12px;">
+                <label class="field-label">Relate sobre o plano de ação</label>
+                <textarea id="f_far_obs" placeholder="Descreva..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 9. LABORATÓRIO ── -->
+    <div class="section-card sec-lab">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🔬</span>
+            <span class="sec-title">Laboratório</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Alguma pendência ou problema urgente?</td><td><input type="radio" name="lab1" value="Sim" class="yn-radio"></td><td><input type="radio" name="lab1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum impacto na realização de exames?</td><td><input type="radio" name="lab2" value="Sim" class="yn-radio"></td><td><input type="radio" name="lab2" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+            <div class="field" style="margin-top:12px;">
+                <label class="field-label">Relate problema (se houver)</label>
+                <textarea id="f_lab_obs" placeholder="Descreva..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 10. RAIOS-X ── -->
+    <div class="section-card sec-rx">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🩻</span>
+            <span class="sec-title">Raios-X</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Alguma pendência ou problema urgente?</td><td><input type="radio" name="rx1" value="Sim" class="yn-radio"></td><td><input type="radio" name="rx1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Chamado aberto?</td><td><input type="radio" name="rx2" value="Sim" class="yn-radio"></td><td><input type="radio" name="rx2" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 11. TOMÓGRAFO ── -->
+    <div class="section-card sec-tomo">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🖥️</span>
+            <span class="sec-title">Tomógrafo</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Alguma pendência ou problema urgente?</td><td><input type="radio" name="tom1" value="Sim" class="yn-radio"></td><td><input type="radio" name="tom1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Verificou se há chamado aberto?</td><td><input type="radio" name="tom2" value="Sim" class="yn-radio"></td><td><input type="radio" name="tom2" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 12. CME ── -->
+    <div class="section-card sec-cme">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">♻️</span>
+            <span class="sec-title">CME — Central de Material Esterilizado</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Autoclave funcionante?</td><td><input type="radio" name="cme1" value="Sim" class="yn-radio"></td><td><input type="radio" name="cme1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Seladora funcionante?</td><td><input type="radio" name="cme2" value="Sim" class="yn-radio"></td><td><input type="radio" name="cme2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Lavadora funcionante?</td><td><input type="radio" name="cme3" value="Sim" class="yn-radio"></td><td><input type="radio" name="cme3" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Plano de ação em execução?</td><td><input type="radio" name="cme4" value="Sim" class="yn-radio"></td><td><input type="radio" name="cme4" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+            <div class="field" style="margin-top:12px;">
+                <label class="field-label">Descreva (se necessário)</label>
+                <textarea id="f_cme_obs" placeholder="Descreva..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 13. CCIH ── -->
+    <div class="section-card sec-ccih">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🦠</span>
+            <span class="sec-title">CCIH — Controle de Infecção Hospitalar</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Algum paciente em precaução?</td><td><input type="radio" name="ccih1" value="Sim" class="yn-radio"></td><td><input type="radio" name="ccih1" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+            <div class="field" style="margin-top:12px;">
+                <label class="field-label">Descreva (se necessário)</label>
+                <textarea id="f_ccih_obs" placeholder="Descreva..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 14. VIGILÂNCIA EM SAÚDE ── -->
+    <div class="section-card sec-vigil">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🔭</span>
+            <span class="sec-title">Núcleo de Vigilância em Saúde</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Casos de doenças transmissíveis ou infectocontagiosas?</td><td><input type="radio" name="vig1" value="Sim" class="yn-radio"></td><td><input type="radio" name="vig1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Todos os casos com SINAN preenchidos?</td><td><input type="radio" name="vig2" value="Sim" class="yn-radio"></td><td><input type="radio" name="vig2" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 15. SEGURANÇA DO PACIENTE ── -->
+    <div class="section-card sec-nsp">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🛡️</span>
+            <span class="sec-title">Núcleo de Segurança do Paciente</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Previsão de rondas e treinamentos?</td><td><input type="radio" name="nsp1" value="Sim" class="yn-radio"></td><td><input type="radio" name="nsp1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Alguma notificação sobre queda ou outro evento adverso moderado ou grave nas últimas 24h?</td><td><input type="radio" name="nsp2" value="Sim" class="yn-radio"></td><td><input type="radio" name="nsp2" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 16. EDUCAÇÃO PERMANENTE ── -->
+    <div class="section-card sec-edu">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">📚</span>
+            <span class="sec-title">Núcleo de Educação Permanente</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Previsão de treinamento previsto para hoje?</td><td><input type="radio" name="edu1" value="Sim" class="yn-radio"></td><td><input type="radio" name="edu1" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 17. HIGIENIZAÇÃO ── -->
+    <div class="section-card sec-higie">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🧹</span>
+            <span class="sec-title">Higienização</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Falta de material?</td><td><input type="radio" name="hig1" value="Sim" class="yn-radio"></td><td><input type="radio" name="hig1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Equipe completa?</td><td><input type="radio" name="hig2" value="Sim" class="yn-radio"></td><td><input type="radio" name="hig2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum impacto para a higienização devido a falta de colaborador?</td><td><input type="radio" name="hig3" value="Sim" class="yn-radio"></td><td><input type="radio" name="hig3" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 18. MAQUEIROS ── -->
+    <div class="section-card sec-maqueiro">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🛒</span>
+            <span class="sec-title">Maqueiros</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Equipe completa?</td><td><input type="radio" name="maq1" value="Sim" class="yn-radio"></td><td><input type="radio" name="maq1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum impacto para a assistência devido a falta de colaborador?</td><td><input type="radio" name="maq2" value="Sim" class="yn-radio"></td><td><input type="radio" name="maq2" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 19. VIGILANTES ── -->
+    <div class="section-card sec-vigilante">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🔒</span>
+            <span class="sec-title">Vigilantes</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Equipe completa?</td><td><input type="radio" name="vig_eq1" value="Sim" class="yn-radio"></td><td><input type="radio" name="vig_eq1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum impacto para a Unidade devido a falta de colaborador?</td><td><input type="radio" name="vig_eq2" value="Sim" class="yn-radio"></td><td><input type="radio" name="vig_eq2" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 20. SUPORTE TI ── -->
+    <div class="section-card sec-ti">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">💻</span>
+            <span class="sec-title">Suporte de TI</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Suporte de TI na Unidade?</td><td><input type="radio" name="ti1" value="Sim" class="yn-radio"></td><td><input type="radio" name="ti1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Problema com impressoras?</td><td><input type="radio" name="ti2" value="Sim" class="yn-radio"></td><td><input type="radio" name="ti2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Problemas com o sistema?</td><td><input type="radio" name="ti3" value="Sim" class="yn-radio"></td><td><input type="radio" name="ti3" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 21. ALMOXARIFADO ── -->
+    <div class="section-card sec-almo">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">📦</span>
+            <span class="sec-title">Almoxarifado</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Falta Insumos?</td><td><input type="radio" name="alm1" value="Sim" class="yn-radio"></td><td><input type="radio" name="alm1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Algum impacto para a Unidade devido a falta de colaborador?</td><td><input type="radio" name="alm2" value="Sim" class="yn-radio"></td><td><input type="radio" name="alm2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Relatada a falta à OSS?</td><td><input type="radio" name="alm3" value="Sim" class="yn-radio"></td><td><input type="radio" name="alm3" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Plano de ação em execução?</td><td><input type="radio" name="alm4" value="Sim" class="yn-radio"></td><td><input type="radio" name="alm4" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+            <div class="field" style="margin-top:12px;">
+                <label class="field-label">Descreva o plano de ação</label>
+                <textarea id="f_alm_obs" placeholder="Descreva..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 22. ENGENHARIA CLÍNICA ── -->
+    <div class="section-card sec-engclin">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">⚙️</span>
+            <span class="sec-title">Engenharia Clínica</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Equipamento</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Problema com Bomba Infusora?</td><td><input type="radio" name="eng1" value="Sim" class="yn-radio"></td><td><input type="radio" name="eng1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Problema com Monitor multiparâmetro?</td><td><input type="radio" name="eng2" value="Sim" class="yn-radio"></td><td><input type="radio" name="eng2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Problema com cama hospitalar ou de transferência?</td><td><input type="radio" name="eng3" value="Sim" class="yn-radio"></td><td><input type="radio" name="eng3" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Problema com ventilador mecânico?</td><td><input type="radio" name="eng4" value="Sim" class="yn-radio"></td><td><input type="radio" name="eng4" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Problema com aspirador de secreção?</td><td><input type="radio" name="eng5" value="Sim" class="yn-radio"></td><td><input type="radio" name="eng5" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Problema com eletrocardiógrafo?</td><td><input type="radio" name="eng6" value="Sim" class="yn-radio"></td><td><input type="radio" name="eng6" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Problema com desfibrilador?</td><td><input type="radio" name="eng7" value="Sim" class="yn-radio"></td><td><input type="radio" name="eng7" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Já abriu chamado?</td><td><input type="radio" name="eng8" value="Sim" class="yn-radio"></td><td><input type="radio" name="eng8" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 23. ROUPARIA ── -->
+    <div class="section-card sec-rouparia">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🧺</span>
+            <span class="sec-title">Rouparia</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Problema com distribuição de roupa?</td><td><input type="radio" name="rou1" value="Sim" class="yn-radio"></td><td><input type="radio" name="rou1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Problema com retirada de hampers?</td><td><input type="radio" name="rou2" value="Sim" class="yn-radio"></td><td><input type="radio" name="rou2" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 24. MANUTENÇÃO ── -->
+    <div class="section-card sec-manut">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🔧</span>
+            <span class="sec-title">Manutenção</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Pergunta</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Problema com o cronograma de chamados?</td><td><input type="radio" name="man1" value="Sim" class="yn-radio"></td><td><input type="radio" name="man1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Alguma pendência urgente?</td><td><input type="radio" name="man2" value="Sim" class="yn-radio"></td><td><input type="radio" name="man2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Falta algum tipo de ferramenta ou peça que está atrasando um reparo solicitado?</td><td><input type="radio" name="man3" value="Sim" class="yn-radio"></td><td><input type="radio" name="man3" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Já foi pedida a compra?</td><td><input type="radio" name="man4" value="Sim" class="yn-radio"></td><td><input type="radio" name="man4" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 25. PLANO DE CONTINGÊNCIA ── -->
+    <div class="section-card sec-conting">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">🚨</span>
+            <span class="sec-title">Plano de Contingência</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <table class="yn-table">
+                <thead><tr><th>Situação</th><th>Sim</th><th>Não</th></tr></thead>
+                <tbody>
+                    <tr><td>Há necessidade de ativar algum plano de contingência?</td><td><input type="radio" name="con1" value="Sim" class="yn-radio"></td><td><input type="radio" name="con1" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Fluxo devido a falta de RH?</td><td><input type="radio" name="con2" value="Sim" class="yn-radio"></td><td><input type="radio" name="con2" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Fluxo devido a falta de água?</td><td><input type="radio" name="con3" value="Sim" class="yn-radio"></td><td><input type="radio" name="con3" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Fluxo devido a falta de energia?</td><td><input type="radio" name="con4" value="Sim" class="yn-radio"></td><td><input type="radio" name="con4" value="Não" class="yn-radio"></td></tr>
+                    <tr><td>Fluxo devido a problemas externos?</td><td><input type="radio" name="con5" value="Sim" class="yn-radio"></td><td><input type="radio" name="con5" value="Não" class="yn-radio"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 26. RESUMO DO PLANTÃO ── -->
+    <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">📝</span>
+            <span class="sec-title">Resumo do Plantão</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <div class="field">
+                <label class="field-label">Resumo geral do plantão<span class="required-star">*</span></label>
+                <textarea id="f_resumo" placeholder="Descreva os principais pontos do plantão, intercorrências, pendências e observações relevantes..." style="min-height:120px;" required></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── ASSINATURA DIGITAL ── -->
+    <div class="section-card" style="border: 2px solid var(--accent);">
+        <div class="section-header" style="background: linear-gradient(135deg, #0f172a, #1e3a8a);" onclick="toggleSection(this.parentElement)">
+            <span class="sec-icon">✍️</span>
+            <span class="sec-title">Assinatura do Executante</span>
+            <span class="sec-chevron">▼</span>
+        </div>
+        <div class="section-body">
+            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
+                Assine abaixo com o dedo (tela) ou mouse para confirmar as informações prestadas neste Safety Huddle.
+            </p>
+            <div class="sig-wrap" id="sigWrap">
+                <canvas id="sigCanvas"></canvas>
+                <div class="sig-placeholder" id="sigPlaceholder">
+                    <span class="sig-icon">✍️</span>
+                    <span>ASSINE AQUI</span>
+                </div>
+            </div>
+            <div class="sig-actions">
+                <button type="button" class="btn-sig-clear" onclick="clearSignature()">🗑️ Limpar Assinatura</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-wrap">
+        <button type="submit" class="btn-submit">🛡️ Enviar Safety Huddle</button>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:10px;">Os dados serão registrados na planilha da UPA 24h Rocinha</p>
+   <footer>&copy; 2026 • Desenvolvido por LFWSM</footer>
+ </div>
+
+</form>
+</div>
+
+<!-- SENDING OVERLAY -->
+<div class="sending-overlay" id="sendingOverlay">
+    <div class="send-spinner"></div>
+    <div class="send-label">ENVIANDO HUDDLE...</div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+    <div class="success-box">
+        <span class="success-icon">✅</span>
+        <h2>Huddle Registrado!</h2>
+        <p id="successProtocolo" style="font-size:0.75rem;color:#3b82f6;font-weight:800;margin-bottom:6px;"></p>
+        <p style="font-size:0.85rem;color:#475569;margin-bottom:20px;">Safety Huddle enviado com sucesso.<br>Bom plantão à equipe da UPA Rocinha!</p>
+        <button class="btn-close-success" style="background:#10b981;width:100%;margin-bottom:10px;font-size:1rem;padding:14px;" onclick="gerarPDF()">📄 BAIXAR COMPROVANTE PDF</button>
+        <button class="btn-close-success" style="background:#1e3a8a;width:100%;font-size:1rem;padding:14px;" onclick="resetForm()">🛡️ NOVO HUDDLE</button>
+    </div>
+</div>
+
+<!-- ÁREA DE IMPRESSÃO PDF -->
+<div id="pdfArea" style="display:none;"></div>
+
+<script>
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // ⚙️  CONFIGURAÇÃO — cole a URL do seu Apps Script
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwXT_q6vOjj9iHF-xA7E_5dUOl5Jgql5knxV2RhDdeKhg-xTtKlTjhM0dALD8beXHYfdw/exec';
+    // Exemplo: 'https://script.google.com/macros/s/AKfy.../exec'
+
+    // ── RELÓGIO ──
+    function atualizarRelogio() {
+        const agora = new Date();
+        const hora  = agora.getHours();
+        const icone = (hora >= 6 && hora < 18) ? '☀️' : '🌙';
+        document.getElementById('hud-clock').innerHTML = `${icone} ${agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
+        document.getElementById('hud-date').textContent = agora.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+    }
+    setInterval(atualizarRelogio, 1000);
+    atualizarRelogio();
+
+    // Pré-preencher data e hora
+    const agoraInit = new Date();
+    document.getElementById('f_data').value = agoraInit.toISOString().split('T')[0];
+    document.getElementById('f_hora').value = agoraInit.toTimeString().slice(0,5);
+
+    // ── TOGGLE SECTION ──
+    function toggleSection(el) {
+        if (typeof el === 'string') el = document.getElementById(el);
+        const body   = el.querySelector('.section-body');
+        const header = el.querySelector('.section-header');
+        const isHidden = body.classList.contains('hidden');
+        body.classList.toggle('hidden', !isHidden);
+        header.classList.toggle('collapsed', !isHidden);
+        updateProgress();
+    }
+
+    // ── CARGO CHIPS ──
+    function selectCargo(chip, value) {
+        document.querySelectorAll('.cargo-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        document.getElementById('f_cargo').value = value;
+    }
+
+    // ── QUANTIDADE ──
+    function changeQty(id, delta) {
+        const el  = document.getElementById(id);
+        const val = Math.max(0, parseInt(el.textContent) + delta);
+        el.textContent = val;
+    }
+
+    // ── CR TEMPO CHIPS ──
+    function updateCRChip() {
+        ['cr-chip1','cr-chip2','cr-chip3'].forEach(id => {
+            const lbl   = document.getElementById(id);
+            const radio = lbl.querySelector('input');
+            lbl.style.background  = radio.checked ? 'var(--navy)' : 'white';
+            lbl.style.color       = radio.checked ? 'white' : 'var(--text)';
+            lbl.style.borderColor = radio.checked ? 'var(--navy)' : 'var(--border)';
+        });
+    }
+    document.querySelectorAll('[name="cr_tempo"]').forEach(r => r.addEventListener('change', updateCRChip));
+
+    // ── PROGRESS ──
+    const TOTAL_SECTIONS = 27;
+    function updateProgress() {
+        const open = document.querySelectorAll('.section-body:not(.hidden)').length;
+        const pct  = Math.round((open / TOTAL_SECTIONS) * 100);
+        document.getElementById('prog-bar').style.width  = pct + '%';
+        document.getElementById('prog-text').textContent = `${open} / ${TOTAL_SECTIONS} seções abertas`;
+    }
+    updateProgress();
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // ✍️  ASSINATURA DIGITAL (canvas)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    const canvas      = document.getElementById('sigCanvas');
+    const ctx         = canvas.getContext('2d');
+    let isDrawing     = false;
+    let sigHasContent = false;
+
+    function resizeCanvas() {
+        const wrap = document.getElementById('sigWrap');
+        const ratio = window.devicePixelRatio || 1;
+        canvas.width  = wrap.offsetWidth  * ratio;
+        canvas.height = 160 * ratio;
+        ctx.scale(ratio, ratio);
+        ctx.strokeStyle = '#1e3a8a';
+        ctx.lineWidth   = 2.5;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const src  = e.touches ? e.touches[0] : e;
+        return {
+            x: (src.clientX - rect.left),
+            y: (src.clientY - rect.top)
+        };
+    }
+
+    function startDraw(e) {
+        e.preventDefault();
+        isDrawing = true;
+        const {x, y} = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        document.getElementById('sigPlaceholder').classList.add('hidden');
+    }
+    function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const {x, y} = getPos(e);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        sigHasContent = true;
+    }
+    function stopDraw(e) {
+        isDrawing = false;
+        ctx.beginPath();
+    }
+
+    canvas.addEventListener('mousedown',  startDraw);
+    canvas.addEventListener('mousemove',  draw);
+    canvas.addEventListener('mouseup',    stopDraw);
+    canvas.addEventListener('mouseleave', stopDraw);
+    canvas.addEventListener('touchstart', startDraw, {passive:false});
+    canvas.addEventListener('touchmove',  draw,      {passive:false});
+    canvas.addEventListener('touchend',   stopDraw);
+
+    function clearSignature() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        sigHasContent = false;
+        document.getElementById('sigPlaceholder').classList.remove('hidden');
+    }
+
+    function getSignatureBase64() {
+        if (!sigHasContent) return '';
+        return canvas.toDataURL('image/png');
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 📤  COLETA DE DADOS
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    function getRadio(name) {
+        const el = document.querySelector(`[name="${name}"]:checked`);
+        return el ? el.value : '—';
+    }
+    function getQty(id) {
+        return document.getElementById(id)?.textContent || '0';
+    }
+
+    function coletarDados() {
+        return {
+            // Identificação
+            data:    document.getElementById('f_data').value,
+            hora:    document.getElementById('f_hora').value,
+            nome:    document.getElementById('f_nome').value.trim(),
+            cargo:   document.getElementById('f_cargo').value,
+
+            // Equipes de plantão
+            eq_especialidades:  getRadio('eq1'),
+            eq_escala_completa: getRadio('eq2'),
+            eq_escala_acessivel:getRadio('eq3'),
+
+            // Pacientes
+            pac_previsao_alta:  getRadio('pac1'),
+            pac_ocupacao_total: getRadio('pac2'),
+            pac_aguard_aval:    getRadio('pac3'),
+            pac_aguard_exame:   getRadio('pac4'),
+            pac_protocolo_24h:  getRadio('pac5'),
+            pac_suspeita_proto: getRadio('pac6'),
+            pac_retorno_2h:     getRadio('pac7'),
+
+            // Porta de Entrada
+            porta_demanda_alta: getRadio('porta1'),
+            porta_cr_tempo:     getRadio('cr_tempo'),
+
+            // NIR
+            nir_qtd_amarela:    getQty('qty-sa'),
+            nir_qtd_ped:        getQty('qty-sap'),
+            nir_qtd_iso:        getQty('qty-iso'),
+            nir_qtd_vermelha:   getQty('qty-sv'),
+            nir_aih:            getRadio('nir1'),
+            nir_vaga_zero:      getRadio('nir2'),
+            nir_ser_24h:        getRadio('nir3'),
+
+            // Serviço Social
+            ss_acomp:           getRadio('ss1'),
+            ss_pendencias:      getRadio('ss2'),
+            ss_seso:            getRadio('ss3'),
+
+            // Nutrição
+            nut_refeicoes:      getRadio('nut1'),
+            nut_dieta_zero:     getRadio('nut2'),
+            nut_restricao:      getRadio('nut3'),
+            nut_obs:            document.getElementById('f_nut_obs').value,
+
+            // Farmácia
+            far_falta:          getRadio('far1'),
+            far_plano_acao:     getRadio('far2'),
+            far_obs:            document.getElementById('f_far_obs').value,
+
+            // Laboratório
+            lab_pendencia:      getRadio('lab1'),
+            lab_impacto:        getRadio('lab2'),
+            lab_obs:            document.getElementById('f_lab_obs').value,
+
+            // Raios-X
+            rx_pendencia:       getRadio('rx1'),
+            rx_chamado:         getRadio('rx2'),
+
+            // Tomógrafo
+            tom_pendencia:      getRadio('tom1'),
+            tom_chamado:        getRadio('tom2'),
+
+            // CME
+            cme_autoclave:      getRadio('cme1'),
+            cme_seladora:       getRadio('cme2'),
+            cme_lavadora:       getRadio('cme3'),
+            cme_plano:          getRadio('cme4'),
+            cme_obs:            document.getElementById('f_cme_obs').value,
+
+            // CCIH
+            ccih_precaucao:     getRadio('ccih1'),
+            ccih_obs:           document.getElementById('f_ccih_obs').value,
+
+            // Vigilância
+            vig_doencas:        getRadio('vig1'),
+            vig_sinan:          getRadio('vig2'),
+
+            // NSP
+            nsp_rondas:         getRadio('nsp1'),
+            nsp_notificacao:    getRadio('nsp2'),
+
+            // Educação
+            edu_treinamento:    getRadio('edu1'),
+
+            // Higienização
+            hig_material:       getRadio('hig1'),
+            hig_equipe:         getRadio('hig2'),
+            hig_impacto:        getRadio('hig3'),
+
+            // Maqueiros
+            maq_equipe:         getRadio('maq1'),
+            maq_impacto:        getRadio('maq2'),
+
+            // Vigilantes
+            vigq_equipe:        getRadio('vig_eq1'),
+            vigq_impacto:       getRadio('vig_eq2'),
+
+            // TI
+            ti_suporte:         getRadio('ti1'),
+            ti_impressora:      getRadio('ti2'),
+            ti_sistema:         getRadio('ti3'),
+
+            // Almoxarifado
+            alm_insumos:        getRadio('alm1'),
+            alm_impacto:        getRadio('alm2'),
+            alm_oss:            getRadio('alm3'),
+            alm_plano:          getRadio('alm4'),
+            alm_obs:            document.getElementById('f_alm_obs').value,
+
+            // Engenharia Clínica
+            eng_bomba:          getRadio('eng1'),
+            eng_monitor:        getRadio('eng2'),
+            eng_cama:           getRadio('eng3'),
+            eng_vent:           getRadio('eng4'),
+            eng_asp:            getRadio('eng5'),
+            eng_ecg:            getRadio('eng6'),
+            eng_desf:           getRadio('eng7'),
+            eng_chamado:        getRadio('eng8'),
+
+            // Rouparia
+            rou_distribuicao:   getRadio('rou1'),
+            rou_hampers:        getRadio('rou2'),
+
+            // Manutenção
+            man_cronograma:     getRadio('man1'),
+            man_pendencia:      getRadio('man2'),
+            man_ferramenta:     getRadio('man3'),
+            man_compra:         getRadio('man4'),
+
+            // Contingência
+            con_ativar:         getRadio('con1'),
+            con_rh:             getRadio('con2'),
+            con_agua:           getRadio('con3'),
+            con_energia:        getRadio('con4'),
+            con_externo:        getRadio('con5'),
+
+            // Resumo e assinatura
+            resumo:             document.getElementById('f_resumo').value.trim(),
+            assinatura:         getSignatureBase64(),
+            timestamp:          new Date().toLocaleString('pt-BR'),
+        };
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 📤  ENVIO PARA GOOGLE SHEETS VIA APPS SCRIPT
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    async function submitHuddle(e) {
+        e.preventDefault();
+
+        const nome   = document.getElementById('f_nome').value.trim();
+        const cargo  = document.getElementById('f_cargo').value;
+        const resumo = document.getElementById('f_resumo').value.trim();
+
+        if (!nome)        { alert('⚠️ Informe o nome do profissional.'); return; }
+        if (!cargo)       { alert('⚠️ Selecione o cargo ou função.'); return; }
+        if (!sigHasContent) { alert('⚠️ Por favor, assine o formulário antes de enviar.'); return; }
+        if (!resumo)      { alert('⚠️ Preencha o resumo do plantão.'); return; }
+
+        // Verificar se a URL foi configurada
+        if (false) {
+            alert('⚙️ ATENÇÃO: Configure a URL do Google Apps Script no código.\n\nSiga as instruções abaixo no arquivo de configuração.');
+            return;
+        }
+
+        const dados = coletarDados();
+
+        document.getElementById('sendingOverlay').classList.add('show');
+
+        try {
+            const resp = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+
+            // no-cors sempre retorna opaque, então consideramos sucesso se não lançar erro
+            document.getElementById('sendingOverlay').classList.remove('show');
+
+            // Salvar dados para o PDF e gerar protocolo
+            _dadosPDF = dados;
+            const proto = 'HUD-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.floor(Math.random()*9000+1000);
+            _dadosPDF.protocolo = proto;
+            document.getElementById('successProtocolo').textContent = '📋 Protocolo: ' + proto;
+            document.getElementById('successOverlay').classList.add('show');
+        } catch(err) {
+            document.getElementById('sendingOverlay').classList.remove('show');
+            alert('❌ Erro ao enviar. Verifique sua conexão e tente novamente.\n\nDetalhe: ' + err.message);
+        }
+    }
+
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 📄  GERAÇÃO DE COMPROVANTE PDF
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    let _dadosPDF = {};
+
+    function gerarPDF() {
+        const d = _dadosPDF;
+        const sig = getSignatureBase64();
+
+        // Montar itens com resposta Sim para destacar
+        function row(label, val) {
+            if (!val || val === '—') return '';
+            const cor = val === 'Sim' ? '#dc2626' : val === 'Não' ? '#16a34a' : '#1e3a8a';
+            return `<tr><td style="padding:5px 8px;font-size:11px;color:#374151;border-bottom:1px solid #f1f5f9;">${label}</td><td style="padding:5px 8px;font-size:11px;font-weight:800;color:${cor};text-align:right;border-bottom:1px solid #f1f5f9;">${val}</td></tr>`;
+        }
+        function sec(titulo, icone, linhas) {
+            const html = linhas.filter(Boolean).join('');
+            if (!html) return '';
+            return `
+            <div style="margin-bottom:12px;">
+                <div style="background:#1e3a8a;color:white;padding:6px 10px;border-radius:6px 6px 0 0;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;">${icone} ${titulo}</div>
+                <table style="width:100%;border-collapse:collapse;background:white;border-radius:0 0 6px 6px;overflow:hidden;border:1px solid #e2e8f0;border-top:none;">${html}</table>
+            </div>`;
+        }
+
+        const protocolo = d.protocolo || '';
+        const dataFmt   = d.data ? new Date(d.data + 'T12:00:00').toLocaleDateString('pt-BR') : '';
+
+        const html = `
+        <div style="font-family:Arial,sans-serif;max-width:720px;margin:0 auto;color:#1e293b;">
+
+            <!-- CABEÇALHO -->
+            <div style="background:#1e3a8a;color:white;padding:18px 20px;border-radius:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-size:20px;font-weight:900;letter-spacing:2px;">🛡️ SAFETY HUDDLE</div>
+                    <div style="font-size:11px;opacity:.8;margin-top:3px;letter-spacing:1px;">UPA 24H ROCINHA — COMPROVANTE DE REGISTRO</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:10px;opacity:.7;">Protocolo</div>
+                    <div style="font-size:14px;font-weight:900;letter-spacing:1px;">${protocolo}</div>
+                </div>
+            </div>
+
+            <!-- IDENTIFICAÇÃO -->
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px 18px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div>
+                    <div style="font-size:9px;font-weight:800;color:#3b82f6;text-transform:uppercase;letter-spacing:1px;">Profissional</div>
+                    <div style="font-size:14px;font-weight:800;color:#1e3a8a;margin-top:2px;">${d.nome || '—'}</div>
+                </div>
+                <div>
+                    <div style="font-size:9px;font-weight:800;color:#3b82f6;text-transform:uppercase;letter-spacing:1px;">Cargo / Função</div>
+                    <div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:2px;">${d.cargo || '—'}</div>
+                </div>
+                <div>
+                    <div style="font-size:9px;font-weight:800;color:#3b82f6;text-transform:uppercase;letter-spacing:1px;">Data</div>
+                    <div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:2px;">${dataFmt}</div>
+                </div>
+                <div>
+                    <div style="font-size:9px;font-weight:800;color:#3b82f6;text-transform:uppercase;letter-spacing:1px;">Horário</div>
+                    <div style="font-size:13px;font-weight:700;color:#1e293b;margin-top:2px;">${d.hora || '—'}</div>
+                </div>
+            </div>
+
+            <!-- SEÇÕES -->
+            ${sec('Equipes de Plantão','👥',[
+                row('Especialidades presentes no Huddle', d.eq_especialidades),
+                row('Escala completa', d.eq_escala_completa),
+                row('Escala acessível aos pacientes', d.eq_escala_acessivel),
+            ])}
+            ${sec('Pacientes','🏥',[
+                row('Previsão de alta', d.pac_previsao_alta),
+                row('Ocupação dos leitos total', d.pac_ocupacao_total),
+                row('Aguardando avaliação', d.pac_aguard_aval),
+                row('Aguardando exame', d.pac_aguard_exame),
+                row('Protocolo aberto nas últimas 24h', d.pac_protocolo_24h),
+                row('Suspeita de Sepse/IAM/AVC', d.pac_suspeita_proto),
+                row('Paciente aguardando retorno > 2h', d.pac_retorno_2h),
+            ])}
+            ${sec('Porta de Entrada / CR','🚪',[
+                row('Demanda de porta de entrada alta', d.porta_demanda_alta),
+                row('Tempo médio CR → Atendimento', d.porta_cr_tempo),
+            ])}
+            ${sec('NIR','🛏️',[
+                row('Qtd Sala Amarela', d.nir_qtd_amarela),
+                row('Qtd Sala Amarela Pediátrica', d.nir_qtd_ped),
+                row('Qtd Isolamento', d.nir_qtd_iso),
+                row('Qtd Sala Vermelha', d.nir_qtd_vermelha),
+                row('Pacientes com AIH', d.nir_aih),
+                row('Vaga Zero com pedido pendente', d.nir_vaga_zero),
+                row('Inseridos no SER < 24h', d.nir_ser_24h),
+            ])}
+            ${sec('Serviço Social','🤝',[
+                row('Acompanhamento ativo', d.ss_acomp),
+                row('Aguardando abrigo/alta social/MP', d.ss_pendencias),
+                row('Familiar com acomp. SESO', d.ss_seso),
+            ])}
+            ${sec('Farmácia','💊',[
+                row('Medicações em falta', d.far_falta),
+                row('Plano de ação em execução', d.far_plano_acao),
+                d.far_obs ? `<tr><td colspan="2" style="padding:5px 8px;font-size:11px;color:#475569;">Obs: ${d.far_obs}</td></tr>` : '',
+            ])}
+            ${sec('Engenharia Clínica','⚙️',[
+                row('Problema Bomba Infusora', d.eng_bomba),
+                row('Problema Monitor', d.eng_monitor),
+                row('Problema Cama hospitalar', d.eng_cama),
+                row('Problema Ventilador mecânico', d.eng_vent),
+                row('Problema Aspirador', d.eng_asp),
+                row('Problema ECG', d.eng_ecg),
+                row('Problema Desfibrilador', d.eng_desf),
+                row('Chamado aberto', d.eng_chamado),
+            ])}
+            ${sec('CCIH','🦠',[
+                row('Paciente em precaução', d.ccih_precaucao),
+                d.ccih_obs ? `<tr><td colspan="2" style="padding:5px 8px;font-size:11px;color:#475569;">Obs: ${d.ccih_obs}</td></tr>` : '',
+            ])}
+            ${sec('Plano de Contingência','🚨',[
+                row('Necessidade de ativar plano', d.con_ativar),
+                row('Falta de RH', d.con_rh),
+                row('Falta de água', d.con_agua),
+                row('Falta de energia', d.con_energia),
+                row('Problema externo', d.con_externo),
+            ])}
+
+            <!-- RESUMO -->
+            <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;margin-bottom:14px;">
+                <div style="font-size:9px;font-weight:900;color:#3b82f6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">📝 Resumo do Plantão</div>
+                <div style="font-size:12px;color:#374151;line-height:1.7;white-space:pre-wrap;">${d.resumo || '—'}</div>
+            </div>
+
+            <!-- ASSINATURA -->
+            <div style="background:white;border:2px solid #1e3a8a;border-radius:10px;padding:14px 18px;margin-bottom:14px;">
+                <div style="font-size:9px;font-weight:900;color:#1e3a8a;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">✍️ Assinatura do Executante</div>
+                <div style="border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;padding:8px;text-align:center;min-height:80px;display:flex;align-items:center;justify-content:center;">
+                    ${sig ? `<img src="${sig}" style="max-height:100px;max-width:100%;object-fit:contain;">` : '<span style="color:#94a3b8;font-size:12px;">Sem assinatura registrada</span>'}
+                </div>
+                <div style="margin-top:8px;border-top:2px solid #1e3a8a;padding-top:8px;display:flex;justify-content:space-between;">
+                    <span style="font-size:10px;color:#64748b;">${d.nome || ''} — ${d.cargo || ''}</span>
+                    <span style="font-size:10px;color:#64748b;">${dataFmt} às ${d.hora || ''}</span>
+                </div>
+            </div>
+
+            <!-- RODAPÉ -->
+            <div style="text-align:center;font-size:9px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:10px;">
+                Documento gerado pelo Portal de Gestão Inteligente — UPA 24h Rocinha<br>
+                Protocolo: ${protocolo} | ${new Date().toLocaleString('pt-BR')}
+            </div>
+        </div>`;
+
+        document.getElementById('pdfArea').innerHTML = html;
+        document.getElementById('pdfArea').style.display = 'block';
+        document.getElementById('successOverlay').classList.remove('show');
+
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => {
+                document.getElementById('pdfArea').style.display = 'none';
+                document.getElementById('successOverlay').classList.add('show');
+            }, 1000);
+        }, 300);
+    }
+    function resetForm() {
+        document.getElementById('successOverlay').classList.remove('show');
+        document.getElementById('huddleForm').reset();
+        document.querySelectorAll('.cargo-chip').forEach(c => c.classList.remove('selected'));
+        document.getElementById('f_cargo').value = '';
+        ['qty-sa','qty-sap','qty-iso','qty-sv'].forEach(id => document.getElementById(id).textContent = '0');
+        const n = new Date();
+        document.getElementById('f_data').value = n.toISOString().split('T')[0];
+        document.getElementById('f_hora').value = n.toTimeString().slice(0,5);
+        updateCRChip();
+        clearSignature();
+        window.scrollTo({top:0,behavior:'smooth'});
+    }
+</script>
+</body>
+</html>
